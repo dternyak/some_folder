@@ -20,6 +20,13 @@ inp = None
 E1 = Entry(textvariable = v)
 E1.pack(side = RIGHT)
 
+def open_file(filename):
+    if sys.platform == "win32":
+        os.startfile(filename)
+    else:
+        opener ="open" if sys.platform == "darwin" else "xdg-open"
+        subprocess.call([opener, filename])
+
 def translate_non_alphanumerics(to_translate, translate_to=u''):
 	global title_text
 	not_letters_or_digits = u'!"#%\'()*+,-./:;<=>?@[\]^_`{|}~'
