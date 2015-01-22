@@ -1,0 +1,3 @@
+(FORMAT: song name-artist) (EXAMPLE: piano man-billy joel) Don't delete this line or the dotted line. One song name-artist per line.
+--------------------------------------------------------------------------------------------------------------------------------------
+some song
