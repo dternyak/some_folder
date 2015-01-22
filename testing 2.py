@@ -22,7 +22,7 @@ def userinput():
     # Update the variable
     inp = a
     #### begins main downloade
-    print(url)
+    url = "https://www.youtube.com/results?search_query=" + str(inp)
     selector = "#results .yt-lockup-title a"
     html = requests.get(url).text
     soup = BeautifulSoup(html)
@@ -41,8 +41,5 @@ def userinput():
 b = Button(mGui, text = 'Submit', command = userinput)
 b.pack(side = BOTTOM)
 
-
-
-    
 
 mGui.mainloop()
