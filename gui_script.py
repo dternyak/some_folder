@@ -1,11 +1,16 @@
-from selenium import webdriver
-import time
-import os
-import requests
-from bs4 import BeautifulSoup
+import urllib
+from urlparse import urljoin
+import os, sys, subprocess
 from Tkinter import *
-import sys
-    
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
+# your path to phantomjs.exe
+path_to_phantomjs_exe = "/Library/Python/2.7/site-packages/phantomjs-1.9.8-macosx/bin/phantomjs"    
 mGui = Tk()
 v = StringVar()
 
@@ -23,28 +28,43 @@ def translate_non_alphanumerics(to_translate, translate_to=u''):
 	title_text = title_str_text
 
 def userinput():
-    path_to_auto_add = "/Users/danielternyak/Music/iTunes/iTunes\ Media/Automatically\ Add\ to\ iTunes.localized/"
-    
+    driver = webdriver.PhantomJS(executable_path= path_to_phantomjs_exe)
     # Declare 'inp' to be global
     global inp
     a = v.get()
     # Update the variable
-    inp = a
+    inp = str(a).replace(" ", "+")
     #### begins main download
-    url = "https://www.youtube.com/results?search_query=" + str(inp)
-    time.sleep(5)
-    selector = "#results .yt-lockup-title a"
-    html = requests.get(url).text
-    soup = BeautifulSoup(html)
-    results = soup.select(selector)
-    variable = results[1].attrs['href']
-    ID = variable[9:]
-    driver = webdriver.PhantomJS(executable_path ="/usr/local/bin/phantomjs")
-    driver.get("http://www.youtube-mp3.org/?e=t_exp&r=true#v=" + ID)
-    driver.implicitly_wait(10)
-    elem = driver.find_element_by_link_text('Download')
-    elem.click()
-    time.sleep(3)
+    driver.get("https://www.youtube.com/results?filters=video&lclk=video&search_query=" + inp + "+lyrics")
+    
+	#find href link within Youtube html, then parse the video id
+    links = driver.find_elements(By.CLASS_NAME, "yt-lockup-title")
+    link = links[0]
+    link = link.get_attribute('innerHTML')
+    link = link.split(' ')[1]
+    link = link.replace('href="/watch?v=', '')
+    link = link.replace('"', '')
+    
+    driver.get("http://www.youtube-mp3.org/?e=t_exp&r=true#v="+link)
+    element = WebDriverWait(driver, 120).until(EC.presence_of_element_located((By.LINK_TEXT, "Download")))
+    
+    link = element.get_attribute('href')
+    title_element = driver.find_element_by_id("title")
+    title_text = title_element.get_attribute('innerHTML')
+    title_text = title_text.replace("<b>Title:</b>", "")
+    translate_non_alphanumerics(title_text)
+    
+    # your desired destination path of the downloaded mp3 files
+    mp3_download_path = "/Users/jameslemieux/Downloads/my_music/"+title_text+".mp3"
+    
+    download_directory = mp3_download_path.replace(title_text, '')
+    download_directory = download_directory.replace('.mp3', '')
+    
+    if os.path.exists(mp3_download_path):
+        print "already in downloads"
+    else:
+        urllib.urlretrieve(link, mp3_download_path)
+        open_file(mp3_download_path) #adds mp3 to itunes library
     print "check downloads"
     driver.close()
 
