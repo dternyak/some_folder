@@ -7,15 +7,13 @@ from tkinter import *
 import sys
     
 mGui = Tk()
-ment = StringVar()
 
 v = StringVar()
 
 # Variable to hold the input
 inp = None
 
-
-E1 = Entry(mGui, textvariable = v, bd = 5)
+E1 = Entry(textvariable = v)
 E1.pack(side = RIGHT)
 
 def userinput():
@@ -24,6 +22,7 @@ def userinput():
     a = input(v.get())
     # Update the variable
     inp = a
+    #### begins main downloader
     url = "https://www.youtube.com/results?search_query=" + str(inp)
     selector = "#results .yt-lockup-title a"
     html = requests.get(url).text
