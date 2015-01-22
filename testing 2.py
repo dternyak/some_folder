@@ -7,7 +7,6 @@ from tkinter import *
 import sys
     
 mGui = Tk()
-
 v = StringVar()
 
 # Variable to hold the input
@@ -19,11 +18,11 @@ E1.pack(side = RIGHT)
 def userinput():
     # Declare 'inp' to be global
     global inp
-    a = input(v.get())
+    a = v.get()
     # Update the variable
     inp = a
-    #### begins main downloader
-    url = "https://www.youtube.com/results?search_query=" + str(inp)
+    #### begins main downloade
+    print(url)
     selector = "#results .yt-lockup-title a"
     html = requests.get(url).text
     soup = BeautifulSoup(html)
